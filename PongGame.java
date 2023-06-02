@@ -12,12 +12,15 @@ public class PongGame extends Frame implements KeyListener {
     private int ballY;
     private int ballXSpeed;
     private int ballYSpeed;
+    private int player1Score;
+    private int player2Score;
     private static final int PADDLE_WIDTH = 30;
     private static final int PADDLE_HEIGHT = 100;
     private static final int BALL_SIZE = 80;
     private static final int PADDLE_SPEED = 20;
     private BufferedImage faceImage;
     private Image backgroundImage;
+    private Font scoreFont;
 
     public PongGame() {
         setTitle("POOLE PONG");
@@ -30,9 +33,11 @@ public class PongGame extends Frame implements KeyListener {
         ballY = getHeight() / 2 - BALL_SIZE / 2;
         ballXSpeed = 2;
         ballYSpeed = 2;
+        player1Score = 0;
+        player2Score = 0;
         addKeyListener(this);
         addWindowListener(new WindowAdapter() {
-        public void windowClosing(WindowEvent we) {
+            public void windowClosing(WindowEvent we) {
                 System.exit(0);
             }
         });
@@ -44,6 +49,7 @@ public class PongGame extends Frame implements KeyListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        scoreFont = new Font("Arial", Font.BOLD, 32);
         startGameLoop();
     }
 
@@ -66,8 +72,12 @@ public class PongGame extends Frame implements KeyListener {
         if (ballY <= 0 || ballY >= getHeight() - BALL_SIZE) {
             ballYSpeed = -ballYSpeed;
         }
-        if (ballX <= 0 || ballX >= getWidth() - BALL_SIZE) {
-            ballXSpeed = -ballXSpeed;
+        if (ballX <= 0) {
+            player2Score++;
+            resetBall();
+        } else if (ballX >= getWidth() - BALL_SIZE) {
+            player1Score++;
+            resetBall();
         }
     }
 
@@ -78,6 +88,13 @@ public class PongGame extends Frame implements KeyListener {
         if (ballX >= getWidth() - BALL_SIZE - PADDLE_WIDTH && ballY + BALL_SIZE >= paddle2Y && ballY <= paddle2Y + PADDLE_HEIGHT) {
             ballXSpeed = -ballXSpeed;
         }
+    }
+
+    private void resetBall() {
+        ballX = getWidth() / 2 - BALL_SIZE / 2;
+        ballY = getHeight() / 2 - BALL_SIZE / 2;
+        ballXSpeed = 2;
+        ballYSpeed = 2;
     }
 
     public void paint(Graphics g) {
@@ -92,8 +109,11 @@ public class PongGame extends Frame implements KeyListener {
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
+        g2d.setFont(scoreFont);
+        g2d.setColor(Color.YELLOW);
+        g2d.drawString("Player 1: " + player1Score, 50, getHeight() - 10); 
+        g2d.drawString("Player 2: " + player2Score, getWidth() - 200, getHeight() - 10); 
     }
-      
 
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -160,3 +180,4 @@ public class PongGame extends Frame implements KeyListener {
         new PongGame();
     }
 }
+
